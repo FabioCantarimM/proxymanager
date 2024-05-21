@@ -1,0 +1,24 @@
+{
+  "name": "myproxy",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "docker:up": "docker-compose up --build --force-recreate --remove-orphans --renew-anon-volumes",
+    "dev": "ts-node src/index.ts | pino-pretty",
+    "build": "rm -rf dist && tsup",
+    "start": "node dist/index.js",
+    "clean": "rimraf dist coverage",
+    "format": "prettier --config .prettierrc --write ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "prettier": "^3.2.5",
+    "ts-node": "^10.9.2",
+    "tsup": "^8.0.2",
+    "tsx": "^4.10.5",
+    "typescript": "^5.4.5"
+  }
+}
