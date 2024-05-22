@@ -21,15 +21,6 @@ export abstract class DefaultProxyServer {
   constructor(rule: ServerRule) {
     this.rule = rule;
 
-    const path = require('path');
-    const key = this.rule.key || path.resolve(__dirname, '../cert/private.pem');
-    const cert = this.rule.cert || path.resolve(__dirname, '../cert/certificate.pem');
-
-
-    const options: https.ServerOptions = {
-      key: fs.readFileSync(key),
-      cert: fs.readFileSync(cert)
-    }
     this.server = http.createServer(this.requestHandler.bind(this));
 
     this.server.on('connect', this.connectHandler.bind(this));
