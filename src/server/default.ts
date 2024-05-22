@@ -1,10 +1,10 @@
 import * as https from 'https';
 import * as http from 'http';
-import * as fs from 'fs';
 import * as net from 'net';
 
 export interface ServerRule {
   port: number;
+  timeout?: number;
   proxy_host?: string;
   proxy_port?: number;
   key?: string;
@@ -17,9 +17,11 @@ export interface ServerRule {
 export abstract class DefaultProxyServer {
   protected server: http.Server;
   protected rule: ServerRule;
+  private timeout: number;
 
   constructor(rule: ServerRule) {
     this.rule = rule;
+    this.timeout = rule.timeout || 10 * 1000 // 10s 
 
     this.server = http.createServer(this.requestHandler.bind(this));
 
@@ -50,9 +52,6 @@ export abstract class DefaultProxyServer {
     const options = this.setRequestOptions(req, res);
 
     const proxy = http.request(options, proxyRes => {
-        console.log(req.headers);
-        console.log(proxyRes.headers);
-    
         res.writeHead(proxyRes.statusCode || 500, proxyRes.headers);
         proxyRes.pipe(res, {
           end: true,
@@ -63,10 +62,36 @@ export abstract class DefaultProxyServer {
         end: true,
     });
 
+    proxy.setTimeout(this.timeout, ()=> {
+      console.error(`Proxy request timed out after ${this.timeout} ms`);
+      proxy.emit("timeout", new Error(`Proxy request timed out after ${this.timeout} ms`));
+    })
+
+    const log = (x: string) => {
+      return console.log.bind(console, x)
+    }
+
+    proxy.on("response", log("response"))
+
+    proxy.on("upgrade", log("upgrade"))
+
+    proxy.on("connect", log("connect"))
+
+    proxy.on("close", log("close"))
+
+    proxy.on("finish", log("finish"))
+    
+    proxy.on("timeout", (e: Error)=> {
+      console.error(e);
+      proxy.emit("close");
+    })
+
+    proxy.on("abort", log("abort"))
+
     proxy.on('error', (err: Error) => {
       console.error(`Proxy error: ${err.message}`);
       res.writeHead(500, { 'Content-Type': 'text/plain' });
-      res.end('Internal server error');
+      res.end(`Internal server error ${err.message}`);
     });
   }
 

@@ -9,7 +9,7 @@
     "start": "node dist/index.js",
     "clean": "rimraf dist coverage",
     "format": "prettier --config .prettierrc --write .",
-    "gen-key":  "openssl genrsa -out ./cert/private.key 2048",
+    "gen-key": "openssl genrsa -out ./cert/private.key 2048",
     "gen-key-pem": "openssl rsa -in ./cert/private.key -outform PEM -out ./cert/private.pem",
     "gen-cert": "openssl req -x509 -new -key cert/private.key -out cert/certificate.crt -days 365",
     "gen-cert-pem": "openssl x509 -in ./cert/certificate.crt -out ./cert/certificate.pem"
@@ -19,6 +19,8 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "axios": "^1.7.2",
+    "cheerio": "^1.0.0-rc.12",
     "prettier": "^3.2.5",
     "ts-node": "^10.9.2",
     "tsup": "^8.0.2",
