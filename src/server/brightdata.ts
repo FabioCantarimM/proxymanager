@@ -1,8 +1,9 @@
 import { DefaultProxyServer, ServerRule } from './default';
 
 export class BrightDataProxyServer extends DefaultProxyServer {
+
   constructor(rule: ServerRule) {
-    super(rule);
+    super({ proxy_host: 'brd.superproxy.io', proxy_port: 22225, ... rule});
   }
 
   protected generateProxyAuth(): string {

@@ -5,8 +5,8 @@ import * as net from 'net';
 
 export interface ServerRule {
   port: number;
-  proxy_host: string;
-  proxy_port: number;
+  proxy_host?: string;
+  proxy_port?: number;
   key?: string;
   cert?:  string;
   user?: string;
