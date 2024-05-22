@@ -27,6 +27,7 @@ export class BrightDataProxyServer extends DefaultProxyServer {
     const encodedAuth = Buffer.from(newAuth).toString('base64');
     return `Basic ${encodedAuth}`;
   }
+  
   protected getNewHeaders(): object {
     const proxyAuth = this.generateProxyAuth();
 
