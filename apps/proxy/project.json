@@ -1,0 +1,38 @@
+{
+  "name": "proxy",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/proxy/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/proxy",
+        "main": "apps/proxy/src/index.ts",
+        "tsConfig": "apps/proxy/tsconfig.app.json",
+        "polyfills": "apps/proxy/src/polyfills.ts",
+        "assets": [],
+        "compiler": "tsc",
+        "target": "node",
+        "webpackConfig": "apps/proxy/webpack.config.js"
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": false,
+          "inspect": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "options": {
+        "buildTarget": "proxy:build",
+        "inspect": true
+      }
+    }
+  },
+  "tags": ["proxy"],
+  "implicitDependencies": ["logger"]
+}

@@ -1,0 +1,41 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "docker-build",
+      "label": "docker-build",
+      "platform": "node",
+      "dockerBuild": {
+        "dockerfile": "${workspaceFolder}/docker/api.dockerfile",
+        "context": "${workspaceFolder}",
+        "pull": true,
+        "tag": "debug"
+      }
+    },
+    {
+      "type": "docker-run",
+      "label": "docker-run: release",
+      "dependsOn": ["docker-build"],
+      "platform": "node"
+    },
+    {
+      "type": "docker-run",
+      "label": "docker-run: debug",
+      "dependsOn": ["docker-build"],
+      "dockerRun": {
+        "command": "yarn debug",
+        "volumes": [{ "containerPath": "/usr/src/app", "localPath": "${workspaceFolder}", "permissions": "rw" }],
+        "envFiles": ["${workspaceFolder}/.env"],
+        "containerName": "debug",
+        "ports": [
+          { "containerPort": 3000, "hostPort": 3000, "protocol": "tcp" },
+          { "containerPort": 9229, "hostPort": 9229, "protocol": "tcp" }
+        ]
+      },
+      "node": {
+        "enableDebugging": true,
+        "inspectPort": 9229
+      }
+    }
+  ]
+}
