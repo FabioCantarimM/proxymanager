@@ -1,0 +1,210 @@
+services:
+  localstack:
+    restart: always
+    build:
+      context: .
+      dockerfile: ./docker/localstack/Dockerfile
+    environment:
+      - SERVICES=s3
+      - PERSISTENCE=/tmp/localstack/data
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    ports:
+      - '4566:4566'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./tmp/localstack:/var/lib/localstack
+      - ./tmp/uploads:/tmp/localstack-s3-storage
+      - ./docker/localstack/aws:/etc/localstack/init/ready.d
+    healthcheck:
+      test: ['CMD', 'awslocal', 's3api', 'wait', 'bucket-exists', '--bucket', 'bucket-name']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    networks:
+      - backend
+
+  brightdata:
+    restart: always
+    platform: linux/amd64
+    image: luminati/luminati-proxy
+    command: proxy-manager
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:22999/api/proxies']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    volumes:
+      - ./docker/brightdata:/root/proxy_manager
+    networks:
+      - backend
+
+  scrapoxy:
+    restart: always
+    image: fabienvauchelles/scrapoxy
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8890']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    environment:
+      - NODE_ENV=production
+      - AUTH_LOCAL_USERNAME=admin
+      - AUTH_LOCAL_PASSWORD=password
+      - BACKEND_JWT_SECRET=secret1
+      - FRONTEND_JWT_SECRET=secret2
+      - STORAGE_FILE_FILENAME=/cfg/scrapoxy.json
+    volumes:
+      - ./docker/scrapoxy:/cfg
+    networks:
+      - backend
+
+  redis:
+    restart: always
+    image: redis/redis-stack:latest
+    environment:
+      - REDISTIMESERIES_ARGS="RETENTION_POLICY=20"
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    ports:
+      - '6379:6379'
+      - '8001:8001'
+    networks:
+      - backend
+
+  nginx:
+    restart: always
+    image: nginx
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./docker/nginx/sites-enabled/:/etc/nginx/sites-enabled/
+      - ./tmp/nginx/logs:/var/log/nginx
+      - ./cert/:/etc/nginx/certs/
+    ports:
+      - '8080:80'
+      - '8081:443'
+      - '22999:22999'
+      - '24000:24000'
+      - '8890:8890'
+      - '8888:8888'
+    depends_on:
+      api:
+        condition: service_healthy
+      proxy:
+        condition: service_started
+      brightdata:
+        condition: service_healthy
+      scrapoxy:
+        condition: service_started
+    networks:
+      - backend
+
+  browserless:
+    restart: always
+    image: browserless/chrome:1.61-puppeteer-21.4.1
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/?token=sandbox']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    environment:
+      # - FUNCTION_ENABLE_INCOGNITO_MODE=true
+      - PREBOOT_CHROME=true
+      # - KEEP_ALIVE=true
+      # - SINGLE_RUN=true
+      - MAX_CONCURRENT_SESSIONS=1
+      - QUEUE_LENGTH=1
+      - CHROME_REFRESH_TIME=900000
+      - WORKSPACE_DELETE_EXPIRED=true
+      - WORKSPACE_EXPIRE_DAYS=1
+      - ENABLE_DEBUGGER=true
+      - DEFAULT_BLOCK_ADS=true
+      - DEFAULT_IGNORE_HTTPS_ERRORS=true
+      - DEFAULT_USER_DATA_DIR=/tmp/browserless-profile
+      - ENABLE_CORS=true
+      - EXIT_ON_HEALTH_FAILURE=true
+      - FUNCTION_BUILT_INS=["crypto"]
+      - FUNCTION_EXTERNALS=["request","fetch"]
+      - TOKEN=sandbox
+    ports:
+      - 3000:3000
+    volumes:
+      - ./tmp/browserless/profile:/tmp/browserless-profile
+    networks:
+      - backend
+
+  api:
+    restart: always
+    build:
+      context: .
+      dockerfile: ./docker/serve.dockerfile
+      target: serve
+      args:
+        - NODE_ENV=development
+        - APP=api
+    working_dir: /usr/src/app
+    command: /bin/sh -c 'yarn nx serve api --verbose'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:80/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    environment:
+      - NODE_ENV=development
+      - APP=api
+      - DEBUG=api*
+      - PORT=80
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      localstack:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      browserless:
+        condition: service_started
+    volumes:
+      - ./cert/:/cert/
+      - ./:/usr/src/app/
+      - ./node_modules:/usr/src/app/node_modules
+    networks:
+      - backend
+
+  proxy:
+    restart: always
+    build:
+      context: .
+      dockerfile: ./docker/serve.dockerfile
+      target: serve
+      args:
+        - NODE_ENV=development
+        - APP=proxy
+    working_dir: /usr/src/app
+    ports:
+      - 9999:80
+    command: /bin/sh -c 'yarn nx serve proxy --verbose'
+    environment:
+      - NODE_ENV=development
+      - APP=proxy
+      - DEBUG=proxy*
+      - PORT=80
+      - PROXY_USER=${PROXY_USER}
+      - PROXY_PASS=${PROXY_PASS}
+    volumes:
+      - ./cert/:/cert/
+      - ./:/usr/src/app/
+      - ./node_modules:/usr/src/app/node_modules
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
