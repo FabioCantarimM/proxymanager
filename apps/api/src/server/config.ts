@@ -1,10 +1,11 @@
 import { createConfig } from 'express-zod-api'
 import { readFileSync } from 'fs'
+import path from 'path'
 
 const { PORT = '80' } = process.env
 
-const cert = readFileSync('/cert/certificate.pem', 'utf8')
-const key = readFileSync('/cert/certificate.key', 'utf8')
+const cert = readFileSync(path.join(__dirname, 'cert/certificate.pem'), 'utf8')
+const key = readFileSync(path.join(__dirname, 'cert/certificate.key'), 'utf8')
 
 const config = createConfig({
   server: {

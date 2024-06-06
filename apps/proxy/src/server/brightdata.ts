@@ -8,6 +8,10 @@ export class BrightDataProxyServer extends DefaultProxyServer {
   protected generateProxyAuth(): string {
     const { user, pass, additional } = this.rule
 
+    if (!user) {
+      throw new Error('Missing proxy username')
+    }
+
     let country = 'br'
     let session = '1234'
     let debug = true

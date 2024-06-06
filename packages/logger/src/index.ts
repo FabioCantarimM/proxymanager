@@ -47,7 +47,7 @@ customConsole.warn = customLogger('warn', chalk.yellow)
 customConsole.log = customLogger('info', chalk.blue)
 customConsole.trace = customLogger('debug', chalk.cyan)
 
-// console = Object.assign(console, customConsole)
+console = Object.assign(console, customConsole)
 
 interface LoggerParams {
   type: keyof typeof originalConsole

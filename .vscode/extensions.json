@@ -1,1 +1,3 @@
-{}
+{
+  "recommendations": ["yoavbls.pretty-ts-errors", "kakumei.ts-debug", "esbenp.prettier-vscode"]
+}

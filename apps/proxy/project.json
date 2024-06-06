@@ -15,21 +15,25 @@
         "assets": [],
         "compiler": "tsc",
         "target": "node",
-        "webpackConfig": "apps/proxy/webpack.config.js"
+        "webpackConfig": "apps/proxy/webpack.config.js",
+        "deleteOutputPath": true
       },
+      "defaultConfiguration": "production",
       "configurations": {
         "production": {
           "optimization": true,
-          "extractLicenses": false,
-          "inspect": false
+          "extractLicenses": true,
+          "sourceMap": false
         }
       }
     },
     "serve": {
       "executor": "@nx/js:node",
       "options": {
+        "runtimeArgs": ["--inspect=0.0.0.0:9229"],
         "buildTarget": "proxy:build",
-        "inspect": true
+        "host": "0.0.0.0",
+        "watch": true
       }
     }
   },

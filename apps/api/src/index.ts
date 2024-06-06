@@ -1,4 +1,3 @@
-import './polyfills'
 import { createServer } from './server'
 
 const onCloseSignal = () => {

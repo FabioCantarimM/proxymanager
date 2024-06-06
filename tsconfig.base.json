@@ -3,19 +3,19 @@
   "compilerOptions": {
     "rootDir": ".",
     "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
     "sourceMap": true,
     "esModuleInterop": true,
-    "declaration": false,
+    "declaration": true,
     "strict": true,
     "isolatedModules": true,
     "noErrorTruncation": true,
-    "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "resolveJsonModule": true,
     "importHelpers": true,
-    "target": "es2020",
-    "module": "esnext",
+    "target": "es2016",
+    "module": "CommonJS",
     "lib": ["es2020"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
@@ -31,10 +31,10 @@
   "exclude": ["node_modules", "scripts", "tmp", "./**/*.spec.ts", "./**/*.spec.tsx"],
   "include": ["./**/*.d.ts", "./scripts/*.d.ts"],
   "ts-node": {
-    "swc": true,
+    "esm": true,
     "transpileOnly": true,
     "logError": true,
-    "require": ["source-map-support"]
+    "require": ["source-map-support", "tsconfig-paths"]
   },
   "typedocOptions": {
     "name": "Proxy Manager - Type Definitions",

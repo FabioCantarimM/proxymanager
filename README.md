@@ -33,6 +33,8 @@ python -c "import uuid; print(uuid.uuid4())"
 ### Certificates
 
 ```bash
+mkdir cert && cd cert
+
 # Generate a new private key
 openssl genrsa -out certificate.key 2048
 
@@ -62,3 +64,7 @@ http://localhost:8080 # Back end
 http://localhost:8081 # Back end (https)
 http://localhost:9999 # Proxy
 ```
+
+
+## Others
+- https://github.com/chobits/ngx_http_proxy_connect_module

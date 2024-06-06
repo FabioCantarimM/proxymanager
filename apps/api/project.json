@@ -12,7 +12,7 @@
         "main": "apps/api/src/index.ts",
         "tsConfig": "apps/api/tsconfig.app.json",
         "polyfills": "apps/api/src/polyfills.ts",
-        "assets": [],
+        "assets": ["apps/api/src/cert"],
         "compiler": "tsc",
         "target": "node",
         "webpackConfig": "apps/api/webpack.config.js"
