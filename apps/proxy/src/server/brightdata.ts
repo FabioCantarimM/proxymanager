@@ -24,7 +24,7 @@ export class BrightDataProxyServer extends DefaultProxyServer {
     if (!this.user) {
       throw new Error('Missing proxy username')
     }
-    let session = '1234'
+    let session = (1000000 * Math.random()).toString();
     let debug = true
 
     if (additional) {

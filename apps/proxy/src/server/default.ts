@@ -9,6 +9,7 @@ export abstract class DefaultProxyServer {
   protected rule: ServerRule
   private timeout: number
   private proxyConfig: ProxyConfig
+  private agent: Record<string, http.Agent> = {}
 
   constructor(rule: ServerRule) {
     this.rule = rule
@@ -30,7 +31,10 @@ export abstract class DefaultProxyServer {
     const proxyHeaders = this.getNewHeaders(httpHeaders, proxyConfig)
     const newHeaders = { ...req.headers, ...proxyHeaders }
 
+    const agent = this.getAgentBySessionID(proxyConfig.session_id ?? '1234');
+
     const options: http.RequestOptions = {
+      agent,
       hostname: this.rule.proxy_host,
       port: this.rule.proxy_port,
       path: req.url,
@@ -95,6 +99,18 @@ export abstract class DefaultProxyServer {
         serverSocket.end()
       })
   }
+  
+  protected getAgentBySessionID(sessionId: string): http.Agent {
+    let agent =  this.agent[sessionId]
+    if (!agent){
+      agent = new http.Agent({
+        keepAlive: true,
+        maxSockets: 10,
+      })
+      this.agent[sessionId] = agent
+    }
+    return agent    
+  }
 
   public start(): void {
     const onCloseSignal = () => {
@@ -111,6 +127,7 @@ export abstract class DefaultProxyServer {
       console.error('Proxy server error:', err)
     })
   }
+
   close() {
     this.server.close()
     console.log('Proxy closed')
