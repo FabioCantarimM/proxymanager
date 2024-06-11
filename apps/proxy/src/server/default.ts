@@ -1,5 +1,8 @@
 import * as http from 'http'
 import * as net from 'net'
+import { v4 as uuid } from 'uuid';
+import { buildRequestEvent, paseHeadersConfigs, sendLog } from '../tools'
+import { HeadersConfgType, ProxyConfig } from '../types'
 
 export interface ServerRule {
   port: number
@@ -10,6 +13,8 @@ export interface ServerRule {
   cert?: string
   user?: string
   pass?: string
+  country?: string
+  zone?: string
   additional?: Record<string, string | number | boolean | symbol>
 }
 
@@ -22,25 +27,27 @@ export abstract class DefaultProxyServer {
   protected server: http.Server
   protected rule: ServerRule
   private timeout: number
+  private proxyConfig: ProxyConfig
 
   constructor(rule: ServerRule) {
     this.rule = rule
     this.timeout = rule.timeout || 10 * 1000 // 10s
+    this.proxyConfig = {}
 
     this.server = http.createServer(this.requestHandler.bind(this))
 
     this.server.on('connect', this.connectHandler.bind(this))
   }
 
-  protected abstract generateProxyAuth(): string
+  protected abstract generateProxyAuth(proxyConfig: ProxyConfig): string
 
-  protected abstract getNewHeaders(): object
+  protected abstract getNewHeaders(httpHeaders:HeadersConfgType, proxyConfig:ProxyConfig): object
 
   protected setRequestOptions(req: http.IncomingMessage, res: http.ServerResponse): http.RequestOptions {
-    const proxyHeaders = this.getNewHeaders()
+    const {httpHeaders, proxyConfig} = paseHeadersConfigs(req.headers)
+    this.proxyConfig = proxyConfig
+    const proxyHeaders = this.getNewHeaders(httpHeaders, proxyConfig)
     const newHeaders = { ...req.headers, ...proxyHeaders }
-
-    console.log(req.url)
 
     const options: http.RequestOptions = {
       hostname: this.rule.proxy_host,
@@ -54,23 +61,7 @@ export abstract class DefaultProxyServer {
   }
 
   protected requestHandler(req: http.IncomingMessage, res: http.ServerResponse): void {
-    req
-      .on('close', log('req.close'))
-      .on('data', log('req.data'))
-      .on('end', log('req.end'))
-      .on('error', log('req.error'))
-      .on('pause', log('req.pause'))
-      .on('readable', log('req.readable'))
-      .on('resume', log('req.resume'))
-
-    res
-      .on('close', log('proxy.res.close'))
-      .on('drain', log('proxy.res.drain'))
-      .on('error', log('proxy.res.error'))
-      .on('finish', log('proxy.res.finish'))
-      .on('pipe', log('proxy.res.pipe'))
-      .on('unpipe', log('proxy.res.unpipe'))
-
+    const requestId = uuid()
     const options = this.setRequestOptions(req, res)
 
     const proxy = http
@@ -79,27 +70,19 @@ export abstract class DefaultProxyServer {
         proxy.emit('error', new Error(`Proxy request timed out after ${this.timeout} ms`))
       })
       .once('response', response => {
+        console.log(`Response Status Code: ${res.statusCode}`)
         res.writeHead(response.statusCode || 500, response.headers)
         response.pipe(res, { end: true })
+
+        const event = buildRequestEvent(requestId,0,this.proxyConfig, req, response)
+        sendLog(event)
       })
-      .on('abort', log('proxy.abort'))
-      .on('close', log('proxy.close'))
-      .on('connect', log('proxy.connect'))
-      .on('continue', log('proxy.continue'))
-      .on('drain', log('proxy.drain'))
-      .on('finish', log('proxy.finish'))
-      .on('information', log('proxy.information'))
-      .on('pipe', log('proxy.pipe'))
-      .on('response', log('proxy.response'))
-      .on('socket', log('proxy.socket'))
       .on('timeout', (e: Error) => {
         if (e) proxy.emit('error', e)
       })
-      .on('unpipe', log('proxy.unpipe'))
-      .on('upgrade', log('proxy.upgrade'))
       .on('error', (err: Error) => {
-        console.error('proxy.error', err)
-
+        const event = buildRequestEvent( requestId,0,this.proxyConfig, req, undefined, err)
+        sendLog(event)
         if (!res.writableFinished) {
           if (!res.headersSent) res.writeHead(500, { 'Content-Type': 'text/plain' })
           res.end(err.message)
@@ -122,17 +105,9 @@ export abstract class DefaultProxyServer {
         serverSocket.pipe(clientSocket)
         clientSocket.pipe(serverSocket)
       })
-      .on('close', log('close'))
-      .on('connect', log('connect'))
-      .on('connectionAttempt', log('connectionAttempt'))
-      .on('connectionAttemptFailed', log('connectionAttemptFailed'))
-      .on('connectionAttemptTimeout', log('connectionAttemptTimeout'))
-      .on('data', log('data'))
-      .on('drain', log('drain'))
-      .on('end', log('end'))
-      .on('lookup', log('lookup'))
-      .on('ready', log('ready'))
-      .on('timeout', log('timeout'))
+      .on('timeout', (e: Error) => {
+        if (e) serverSocket.emit('error', e)
+      })
       .on('error', (err: Error) => {
         console.error(`Server socket error`, err)
         clientSocket.end()
