@@ -1,6 +1,7 @@
 import { BrightDataProxyServer } from './server/brightdata'
-import { ServerRule } from './server/default'
+import { ServerRule } from './types';
 import 'dotenv/config';
+
 
 
 const { PROXY_USER, PROXY_PASS, PROXY_ZONE, PROXY_COUNTRY } = process.env

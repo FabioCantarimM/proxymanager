@@ -1,5 +1,5 @@
-import { HeadersConfgType, ProxyConfig } from '../types'
-import { DefaultProxyServer, ServerRule } from './default'
+import { HeadersConfgType, ProxyConfig, ServerRule } from '../types'
+import { DefaultProxyServer} from './default'
 
 export class BrightDataProxyServer extends DefaultProxyServer {
   private user = '';
@@ -14,11 +14,11 @@ export class BrightDataProxyServer extends DefaultProxyServer {
   protected generateProxyAuth(proxyConfig: ProxyConfig): string {
     
     const { user, pass, country, zone, additional } = this.rule;
-    const { proxy_username, proxy_password, proxy_country = 'br', proxy_zone } = proxyConfig;
+    const { proxy_username, proxy_password, proxy_country, proxy_zone } = proxyConfig;
 
     this.user = proxy_username ? proxy_username : user ?? '';
     this.password = proxy_password ? proxy_password : pass ?? '';
-    this.country = proxy_country ? proxy_country : country ?? '';
+    this.country = proxy_country ? proxy_country : country ?? 'br';
     this.zone = proxy_zone ? proxy_zone : zone ?? '';
 
     if (!this.user) {

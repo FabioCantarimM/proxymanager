@@ -2,26 +2,7 @@ import * as http from 'http'
 import * as net from 'net'
 import { v4 as uuid } from 'uuid';
 import { buildRequestEvent, paseHeadersConfigs, sendLog } from '../tools'
-import { HeadersConfgType, ProxyConfig } from '../types'
-
-export interface ServerRule {
-  port: number
-  timeout?: number
-  proxy_host?: string
-  proxy_port?: number
-  key?: string
-  cert?: string
-  user?: string
-  pass?: string
-  country?: string
-  zone?: string
-  additional?: Record<string, string | number | boolean | symbol>
-}
-
-const log = (x: string) => {
-  console.log(x)
-  return () => {}
-}
+import { HeadersConfgType, ProxyConfig, ServerRule } from '../types'
 
 export abstract class DefaultProxyServer {
   protected server: http.Server
