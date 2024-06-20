@@ -51,6 +51,10 @@
     "express-zod-api": "18.5.2",
     "http-errors": "2.0.0",
     "pino": "9.0.0",
+    "proxy-chain": "^2.4.1",
+    "puppeteer": "^22.11.1",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
     "reflect-metadata": "0.2.2",
     "winston": "3.13.0",
     "zod": "3.23.8"

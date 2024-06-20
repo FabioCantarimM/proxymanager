@@ -1,0 +1,38 @@
+{
+  "name": "browser",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/browser/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/browser",
+        "main": "apps/browser/src/index.ts",
+        "tsConfig": "apps/browser/tsconfig.app.json",
+        "polyfills": "apps/browser/src/polyfills.ts",
+        "assets": ["apps/browser/src/cert"],
+        "compiler": "tsc",
+        "target": "node",
+        "webpackConfig": "apps/browser/webpack.config.js"
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": false,
+          "inspect": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "options": {
+        "buildTarget": "browser:build",
+        "inspect": false
+      }
+    }
+  },
+  "tags": ["browser"],
+  "implicitDependencies": ["logger"]
+}

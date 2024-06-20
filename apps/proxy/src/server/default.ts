@@ -109,6 +109,8 @@ export abstract class DefaultProxyServer {
       })
       this.agent[sessionId] = agent
     }
+
+    console.log(this.agent[sessionId])
     return agent    
   }
 
