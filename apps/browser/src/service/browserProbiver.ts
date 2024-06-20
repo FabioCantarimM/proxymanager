@@ -18,10 +18,10 @@ class BrowserController {
     private password: string = process.env.DEFAULT_UNLOCKER_PASSWORD || '';
     private username: string = process.env.DEFAULT_UNLOCKER_USERNAME || '';
     private proxyServer: string = process.env.DEFAULT_UNLOCKER_SERVER || 'brd.superproxy.io:22225';
-    private remoteUsername: string = process.env.DEFAULT_REMOTE_PASSWORD || '';
+    private remoteUsername: string = process.env.DEFAULT_REMOTE_USERNAME || '';
     private remotePassword: string = process.env.DEFAULT_REMOTE_PASSWORD || '';
-    private remoteServer: string =  process.env.DEFAULT_REMOTE_PASSWORD || 'brd.superproxy.io:9222';
-    private remoteBrowser: string = process.env.DEFAULT_UNLOCKER_SERVER || `wss://${this.remoteUsername}:${this.remotePassword}@${this.remoteServer}`
+    private remoteServer: string =  process.env.DEFAULT_REMOTE_SERVER || 'brd.superproxy.io:9222';
+    private remoteBrowser: string = process.env.DEFAULT_REMOTE_BROWSER || `wss://${this.remoteUsername}:${this.remotePassword}@${this.remoteServer}`
 
     constructor(options: BrowserOptions = {}) {
         this.settingBrowserOptions(options)
