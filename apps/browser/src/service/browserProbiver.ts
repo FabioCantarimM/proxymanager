@@ -2,7 +2,6 @@ import { Browser, Page } from 'puppeteer';
 import puppeteer from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth'
 import { setTimeout } from 'timers/promises';
-// import * as proxyChain from 'proxy-chain'
 
 interface BrowserOptions {
     headless?: boolean;
@@ -19,7 +18,6 @@ class BrowserController {
     private password: string = process.env.DEFAULT_UNLOCKER_PASSWORD || '';
     private username: string = process.env.DEFAULT_UNLOCKER_USERNAME || '';
     private proxyServer: string = process.env.DEFAULT_UNLOCKER_SERVER || 'brd.superproxy.io:22225';
-    private ano_Server = '';
     private remoteUsername: string = process.env.DEFAULT_REMOTE_PASSWORD || '';
     private remotePassword: string = process.env.DEFAULT_REMOTE_PASSWORD || '';
     private remoteServer: string =  process.env.DEFAULT_REMOTE_PASSWORD || 'brd.superproxy.io:9222';
@@ -30,9 +28,6 @@ class BrowserController {
     }
 
     public async launch() {
-
-        // this.ano_Server = await proxyChain.anonymizeProxy(`http://${this.username}:${this.password}@${this.proxyServer}`)
-        // this.settingBrowserOptions(options)
         if (this.options?.remoteUrl) {
             this.browser = await puppeteer.connect({ browserWSEndpoint: this.remoteBrowser = (typeof this.options.remoteUrl === 'string') 
                 ? this.options.remoteUrl 
@@ -53,7 +48,7 @@ class BrowserController {
 
     private async settingBrowserOptions(options:  BrowserOptions){
         this.options =  {
-            headless: !options.headless ? options.headless : true, // Defina como true se desejar executar em modo headless
+            headless: !options.headless ? options.headless : true,
             args: [
                 '--no-sandbox', 
                 '--disable-setuid-sandbox',
@@ -80,27 +75,19 @@ class BrowserController {
     }
 }
 
-// Uso da classe
 (async () => {
-
 
     const browserController = new BrowserController({headless: false});
     
     const page = await browserController.launch();
-
-    // Agora você pode usar browserController.getBrowserInstance() para obter a instância do navegador e realizar outras operações.
-
-    // Exemplos de uso:
     if (page) {
         // await page.goto('https://bot.sannysoft.com');
         await page.goto('https://managingwp.io/2022/08/10/testing-and-reviewing-cloudflare-firewall-and-waf-rules/');
         await setTimeout(3000)
-        await page.screenshot({ path: 'testresult.png', fullPage: true })
+        // await page.screenshot({ path: 'testresult.png', fullPage: true })
         const cookies = await page.cookies()
         console.log(cookies)
         await page.close();
     }
-
-    // Fecha o navegador
     await browserController.close();
 })();
