@@ -1,21 +1,21 @@
 {
-  "name": "browser",
+  "name": "wafbypass",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/browser/src",
+  "sourceRoot": "apps/wafbypass/src",
   "projectType": "application",
   "targets": {
     "build": {
       "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/browser",
-        "main": "apps/browser/src/index.ts",
-        "tsConfig": "apps/browser/tsconfig.app.json",
-        "polyfills": "apps/browser/src/polyfills.ts",
-        "assets": ["apps/browser/src/cert"],
+        "outputPath": "dist/wafbypass",
+        "main": "apps/wafbypass/src/index.ts",
+        "tsConfig": "apps/wafbypass/tsconfig.app.json",
+        "polyfills": "apps/wafbypass/src/polyfills.ts",
+        "assets": ["apps/wafbypass/src/cert"],
         "compiler": "tsc",
         "target": "node",
-        "webpackConfig": "apps/browser/webpack.config.js"
+        "webpackConfig": "apps/wafbypass/webpack.config.js"
       },
       "configurations": {
         "production": {
@@ -28,11 +28,11 @@
     "serve": {
       "executor": "@nx/js:node",
       "options": {
-        "buildTarget": "browser:build",
+        "buildTarget": "wafbypass:build",
         "inspect": false
       }
     }
   },
-  "tags": ["browser"],
+  "tags": ["wafbypass"],
   "implicitDependencies": ["logger"]
 }

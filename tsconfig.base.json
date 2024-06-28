@@ -25,7 +25,8 @@
       "@proxy-manager/*": ["./packages/*/src/index.ts"]
     },
     "removeComments": true,
-    "alwaysStrict": true
+    "alwaysStrict": true,
+    "allowJs": true
   },
   "transpileOnly": true,
   "exclude": ["node_modules", "scripts", "tmp", "./**/*.spec.ts", "./**/*.spec.tsx"],
