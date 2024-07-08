@@ -1,0 +1,15 @@
+{
+  "name": "engine",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/engine/src",
+  "projectType": "library",
+  "targets": {
+    "docs": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "yarn typedoc --name engine --tsconfig packages/engine/tsconfig.lib.json --out dist/docs/engine packages/engine/src/index.ts"
+      }
+    }
+  },
+  "tags": []
+}
