@@ -113,6 +113,23 @@ services:
     networks:
       - backend
 
+  proxypy:
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    # https://proxypy.readthedocs.io/en/latest/#http-proxy-plugins
+    command: "--data-dir /data --cache-dir /cache --ca-cert-dir /cert --ca-key-file /cert/ca-key.pem --ca-cert-file /cert/ca-cert.pem --ca-signing-key-file /cert/ca-signing-key.pem --hostname 0.0.0.0 --port 8899 --plugins proxy.plugin.CloudflareDnsResolverPlugin proxy.plugin.CacheResponsesPlugin"
+    build:
+      context: .
+      dockerfile: ./docker/proxypy/Dockerfile
+    ports:
+      - "8899:8899"
+    volumes:
+      - ./cert:/cert
+      - ./tmp/proxypy/cache:/cache
+      - ./tmp/proxypy/data:/data
+    networks:
+      - backend
+
   proxy:
     restart: always
     build:
