@@ -18,7 +18,6 @@ puppeteer.use(StealthPlugin())
 //Retry
 //Liberar request pelo browser
 //Qunato tempo o browser pode ficar em memoria sem quebrar
-//Liberar o uso do proxy
 
 export class BrowserController {
     private browser: Browser | null = null;
