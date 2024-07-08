@@ -1,0 +1,100 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
+{
+  "name": "Python 3",
+  // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+  // "image": "mcr.microsoft.com/devcontainers/python:3.12",
+  "build": {
+    // Path is relative to the devcontainer.json file.
+    "dockerfile": "Dockerfile"
+  },
+  // Features to add to the dev container. More info: https://containers.dev/features.
+  "features": {
+    "ghcr.io/jungaretti/features/make:1": "1.0.1",
+    "ghcr.io/devcontainers-contrib/features/mitmproxy:2": {
+      "version": "10.1.5"
+    },
+    "ghcr.io/devcontainers-contrib/features/poetry:2": {
+      "version": "1.7.1"
+    },
+    "docker-in-docker": {
+      "version": "latest",
+      "moby": true,
+      "dockerDashComposeVersion": "v1"
+    }
+  },
+  "forwardPorts": [9833, 8080, 3000, 6565, 8086],
+  "runArgs": [
+    "--network=host",
+    "--add-host=host.docker.internal:host-gateway",
+    "--init",
+    "--privileged"
+  ],
+  "overrideCommand": false,
+  "onCreateCommand": "poetry config virtualenvs.create false",
+  // Configure tool-specific properties.
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "lextudio.restructuredtext-pack",
+        "usernamehw.errorlens",
+        "christian-kohler.path-intellisense",
+        "pkief.material-icon-theme",
+        "ms-azuretools.vscode-docker",
+        "william-voyek.vscode-nginx",
+        "esbenp.prettier-vscode",
+        "ahmadalli.vscode-nginx-conf",
+        "ms-kubernetes-tools.vscode-kubernetes-tools",
+        "mischah.relaxed-theme",
+        "njpwerner.autodocstring",
+        "tamasfe.even-better-toml",
+        "ms-vscode.makefile-tools",
+        "ms-python.debugpy",
+        "donjayamanne.python-environment-manager",
+        "donjayamanne.python-extension-pack",
+        "zeshuaro.vscode-python-poetry"
+      ],
+      "settings": {
+        "python.linting.enabled": true,
+        "python.linting.pylintEnabled": false, // We use flake8
+        "python.formatting.autopep8Path": "/usr/local/py-utils/bin/autopep8",
+        "python.formatting.blackPath": "/usr/local/py-utils/bin/black",
+        "python.formatting.yapfPath": "/usr/local/py-utils/bin/yapf",
+        "python.linting.banditPath": "/usr/local/py-utils/bin/bandit",
+        "python.linting.flake8Path": "/usr/local/py-utils/bin/flake8",
+        "python.linting.mypyPath": "/usr/local/py-utils/bin/mypy",
+        "python.linting.pycodestylePath": "/usr/local/py-utils/bin/pycodestyle",
+        "python.linting.pydocstylePath": "/usr/local/py-utils/bin/pydocstyle",
+        "python.linting.pylintPath": "/usr/local/py-utils/bin/pylint",
+        "build": {
+          "args": {
+            "network": "host"
+          }
+        }
+      }
+    },
+    "codespaces": {
+      "openFiles": [],
+      "repositories": {}
+    }
+  },
+  "remoteEnv": {
+    "NEXUS_USERNAME": "${localEnv:NEXUS_USERNAME}",
+    "NEXUS_PASSWORD": "${localEnv:NEXUS_PASSWORD}",
+    "POETRY_HTTP_BASIC_NEXUS_USERNAME": "${localEnv:NEXUS_USERNAME}",
+    "POETRY_HTTP_BASIC_NEXUS_PASSWORD": "${localEnv:NEXUS_PASSWORD}",
+    "POETRY_HTTP_BASIC_JUSBRASIL_PYPI_USERNAME": "${localEnv:NEXUS_USERNAME}",
+    "POETRY_HTTP_BASIC_JUSBRASIL_PYPI_PASSWORD": "${localEnv:NEXUS_PASSWORD}"
+    // "PATH": "${containerEnv:PATH}:${containerEnv:HOME}/.local/bin"
+  },
+  // More info: https://aka.ms/dev-containers-non-root.
+  "containerUser": "vscode",
+  "remoteUser": "root",
+  "mounts": [
+    "source=${localEnv:HOME}/.ssh,target=/root/.ssh,type=bind,consistency=cached",
+    "source=/var/run/docker.sock,target=/var/run/docker-host.sock,type=bind"
+    // "source=${localEnv:HOME}/.docker,target=/root/.docker,type=bind,consistency=cached"
+  ]
+}
