@@ -3,7 +3,7 @@ import { FetchEngine } from './core/fetch-engine'
 import { HTTPEngine } from './core/http-engine'
 import { Response } from './lib/response'
 
-export * from './request/adapters/RequestAdapter'
+export * from './core/adapters/RequestAdapter'
 
 /**
  * A collection of available engines for making HTTP requests.

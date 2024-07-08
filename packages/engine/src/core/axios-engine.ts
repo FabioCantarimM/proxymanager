@@ -2,7 +2,7 @@ import { createAxiosInstance } from '../lib/axios'
 import { Numbers } from '../methods/numbers'
 import { Agent } from '../request/Agent'
 import { AxiosRequest } from '../request/AxiosRequest'
-import { RequestAdapter } from '../request/adapters/RequestAdapter'
+import { RequestAdapter } from './adapters/RequestAdapter'
 
 export class AxiosEngine extends RequestAdapter {
   getRequester() {

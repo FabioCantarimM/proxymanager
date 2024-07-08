@@ -1,6 +1,6 @@
 import { Agent } from '../request/Agent'
 import { FetchRequest } from '../request/FetchRequest'
-import { RequestAdapter } from '../request/adapters/RequestAdapter'
+import { RequestAdapter } from './adapters/RequestAdapter'
 
 export class FetchEngine extends RequestAdapter {
   getRequester() {

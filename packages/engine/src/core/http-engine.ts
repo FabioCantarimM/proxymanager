@@ -1,4 +1,4 @@
-import { RequestAdapter } from '../request/adapters/RequestAdapter'
+import { RequestAdapter } from './adapters/RequestAdapter'
 import { Agent } from '../request/Agent'
 import { HttpRequest } from '../request/HttpRequest'
 
