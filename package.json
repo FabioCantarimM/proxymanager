@@ -55,6 +55,7 @@
     "puppeteer": "^22.11.1",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "redis": "^4.6.15",
     "reflect-metadata": "0.2.2",
     "winston": "3.13.0",
     "zod": "3.23.8"
@@ -73,6 +74,7 @@
     "@nx/workspace": "19.0.8",
     "@swc/core": "^1.5.7",
     "@types/node": "20.12.12",
+    "@types/redis": "^4.0.11",
     "@types/supertest": "6.0.2",
     "@types/uuid": "^9.0.8",
     "babel-loader": "9.1.3",
