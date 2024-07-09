@@ -13,6 +13,7 @@
         "tsConfig": "apps/api/tsconfig.app.json",
         "polyfills": "apps/api/src/polyfills.ts",
         "assets": ["apps/api/src/cert"],
+        "sourceMap":true,
         "compiler": "tsc",
         "target": "node",
         "webpackConfig": "apps/api/webpack.config.js"
@@ -29,7 +30,9 @@
       "executor": "@nx/js:node",
       "options": {
         "buildTarget": "api:build",
-        "inspect": false
+        "inspect": true,
+        "host": "0.0.0.0",
+        "port": 9229
       }
     }
   },
